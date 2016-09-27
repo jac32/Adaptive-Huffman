@@ -1,5 +1,12 @@
 language: cpp
+
 compiler:
   - clang++
   - g++
+
+addons:
+    apt:
+      sources: ['kalakris-cmake']
+      packages: ['cmake']
+
 script: cmake . && make 
