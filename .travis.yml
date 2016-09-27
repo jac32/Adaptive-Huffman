@@ -1,5 +1,7 @@
 language: cpp
 
+sudo: true
+
 compiler:
   - clang++
   - g++
