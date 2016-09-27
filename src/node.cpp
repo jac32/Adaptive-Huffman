@@ -1,5 +1,6 @@
 #include "node.hpp"
 
+// CONSTRUCTORS -----------------------------------------------------------------
 Node::Node(int w) {
   weight = w;
 }
@@ -20,12 +21,14 @@ Branch::Branch(Node* left, Node* right) :
   this->right = right;
 }
 
+// DESTRUCTORS ------------------------------------------------------------------
 Branch::~Branch() {
   delete left;
   delete right;
 }
 
 
+// Search  ----------------------------------------------------------------------
 Node* Leaf::search_weights(int weight) {
   if (this->get_weight() == weight) {
     return this;
@@ -33,6 +36,7 @@ Node* Leaf::search_weights(int weight) {
     return nullptr;
   }
 }
+
 
 Node* Branch::search_weights(int weight) {
   Node* result = left->search_weights(weight);
@@ -42,18 +46,20 @@ Node* Branch::search_weights(int weight) {
   }
 }
 
+// TRAVERSAL --------------------------------------------------------------------
 Node* Empty::inorder_next() {
-  Node* next = this->get_parent();
-  if (this == ((Branch*) next)->get_left()) {
+  Branch* next = this->get_parent();
+  if (this == next->get_left()) {
     return next;
   } else {
-    while (next == ((Branch*) next)->get_left()) {
-      //TODO: Fix this: http://stackoverflow.com/questions/12684191/implementing-an-iterator-over-binary-or-arbitrary-tree-using-c-11
-      // next = next->get_parent
+    while (next != next->get_parent()->get_left()) {
+      next = next->get_parent();
     }
+    return next->get_parent();
   }
 }
 
 Node* Branch::inorder_next() {
   return this->right->leftmost();
 }
+

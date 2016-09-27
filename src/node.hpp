@@ -1,18 +1,25 @@
 #ifndef HUFFMAN_NODE_HPP_
 #define HUFFMAN_NODE_HPP_
 
+// Classes
+class Node;
+class Empty;
+class Leaf;
+class Branch;
+
+
 class Node {
   int weight;
   Node* parent;
 public: 
   Node(int);
-  virtual ~Node() = default;
+  virtual ~Node() {};// = default;
 
   virtual Node* search_weights(int);
   virtual Node* leftmost();
   virtual Node* inorder_next();
 
-  Node* get_parent() { return parent; }
+  Branch* get_parent() { return ((Branch*) parent); }
   int get_weight() { return weight; }
 
   void set_parent(Node* parent) { this->parent = parent; }
@@ -44,7 +51,6 @@ class Branch: public Node {
 public: 
   Branch(Node*, Node*);
   ~Branch();
-
   
   Node* inorder_next();
   Node* leftmost() { return left->leftmost(); }

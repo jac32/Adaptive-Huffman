@@ -4,7 +4,7 @@
 
 // CONSTRUCTORS & DESTRUCTORS --------------------------------------------------
 Tree::Tree(std::istream &input, std::ostream &output) : input(input), output(output) {
-  root = zero = new NYT();
+  root = zero = new Empty();
 }
 
 Tree::~Tree() {
@@ -16,7 +16,7 @@ void Tree::encode() {
   // TODO: update needs to deal with existing symbols
   while ((symbol = input.get()) != input.end) {
     if (this->contains(symbol)) {
-      this-> update(symbol);
+      this->update(symbol);
     } else {
       std::cout << "NYT: " << symbol << std::endl;
       this->update(symbol);
@@ -39,7 +39,6 @@ void Tree::update(char symbol) {
     current_node = current_node->get_parent();
   }
   current_node->inc_weight();
-  this->update_codes();
 }
 
 
@@ -61,6 +60,7 @@ void Tree::swap(Node* a, Node* b) {
 }
 
 bool Tree::contains(char symbol) {
+  return true;
   // TODO: Implement contains
 }
 

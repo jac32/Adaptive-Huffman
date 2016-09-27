@@ -1,7 +1,6 @@
 #ifndef HUFFMAN_TREE_H_
 #define HUFFMAN_TREE_H_
 
-
 #include <iostream>
 
 #include "node.hpp"
@@ -23,10 +22,8 @@ public:
   bool contains(char);
   Node* has_swappable(Node*);
   void swap(Node*, Node*);
-  void update_codes();
 
-
-  Node* get_zero();
+  Node* get_zero() { return this->zero; };
 };
 
 
