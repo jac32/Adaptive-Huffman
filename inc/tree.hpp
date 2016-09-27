@@ -6,24 +6,24 @@
 #include "node.hpp"
 
 class Tree {
-  Node* root;
-  Node* zero;
-  std::istream &input;
-  std::ostream &output;
+//   Node* root;
+//   Node* zero;
+//   std::istream &input;
+//   std::ostream &output;
 
-  friend class TreeIter;
+//   friend class TreeIter;
 
-public:
-  Tree(std::istream&, std::ostream&);
-  ~Tree();
-  void update(char);
-  void encode();
-  void decode();
-  bool contains(char);
-  Node* has_swappable(Node*);
-  void swap(Node*, Node*);
+// public:
+//   Tree(std::istream&, std::ostream&);
+//   ~Tree();
+//   void update(char);
+//   void encode();
+//   void decode();
+//   bool contains(char);
+//   Node* has_swappable(Node*);
+//   void swap(Node*, Node*);
 
-  Node* get_zero() { return this->zero; };
+//   Node* get_zero() { return this->zero; };
 };
 
 
