@@ -1,4 +1,4 @@
-CC := clang++
+CC := g++
 
 SRCDIR := src
 BUILDDIR := build
@@ -10,7 +10,7 @@ HEADEXT := hpp
 SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
 OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
 NOT_OBJECTS := $(subst $(BUILDDIR)/main.o,,$(OBJECTS))
-CFLAGS := -std=c++11 -g #-o4#-ggdb3 # -Wall #-fno-inline-functions
+CFLAGS := -std=c++11 -Wall -g #-o4#-ggdb3 # -Wall #-fno-inline-functions
 INC := -I include
 
 $(TARGET): $(OBJECTS) 

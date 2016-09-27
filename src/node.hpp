@@ -13,11 +13,11 @@ class Node {
   Node* parent;
 public: 
   Node(int);
-  virtual ~Node() {};// = default;
+  virtual ~Node() {};
 
-  virtual Node* search_weights(int);
-  virtual Node* leftmost();
-  virtual Node* inorder_next();
+  virtual Node* search_weights(int) = 0;
+  virtual Node* leftmost() = 0;
+  virtual Node* inorder_next() = 0;
 
   Branch* get_parent() { return ((Branch*) parent); }
   int get_weight() { return weight; }
@@ -26,13 +26,19 @@ public:
   void inc_weight() { weight++; }
 };
 
+class Marker : public Node {
+  Node* root; 
+public: 
+  Marker(Node*);
+  Node* leftmost() { return root; }
+};
 
 class Empty : public Node {
 public:
   Empty();
   Node* inorder_next();
   Node* leftmost() { return this; }
-  Node* search_weights(int) { return nullptr; }
+  Node* search_weights(int);
 };
 
 
@@ -40,7 +46,6 @@ class Leaf: public Empty {
   char symbol;
 public:
   Leaf(char);
-  Node* search_weights(int);
 };
 
 
@@ -52,9 +57,9 @@ public:
   Branch(Node*, Node*);
   ~Branch();
   
-  Node* inorder_next();
-  Node* leftmost() { return left->leftmost(); }
-  Node* search_weights(int);
+  Node* inorder_next() override;
+  Node* search_weights(int) override;
+  Node* leftmost() override { return left->leftmost(); }
 
   Node* get_right() { return right; }
   Node* get_left() { return left; }

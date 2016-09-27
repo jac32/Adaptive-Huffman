@@ -1,5 +1,5 @@
-#ifndef HUFFMAN_TREE_H_
-#define HUFFMAN_TREE_H_
+#ifndef HUFFMAN_TREE_HPP_
+#define HUFFMAN_TREE_HPP_
 
 #include <iostream>
 
@@ -42,4 +42,4 @@ public:
   friend void swap(TreeIter &lhs, TreeIter &rhs); //C++11 I think
 };
 
-#endif // HUFFMAN_TREE_H_
+#endif // HUFFMAN_TREE_HPP_

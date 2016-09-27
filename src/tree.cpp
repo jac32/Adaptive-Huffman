@@ -5,6 +5,7 @@
 // CONSTRUCTORS & DESTRUCTORS --------------------------------------------------
 Tree::Tree(std::istream &input, std::ostream &output) : input(input), output(output) {
   root = zero = new Empty();
+  root->set_parent(new Marker(root));
 }
 
 Tree::~Tree() {
@@ -59,7 +60,7 @@ void Tree::swap(Node* a, Node* b) {
   b->set_parent(tmp);
 }
 
-bool Tree::contains(char symbol) {
+bool Tree::contains(char) {
   return true;
   // TODO: Implement contains
 }
