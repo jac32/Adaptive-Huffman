@@ -2,22 +2,22 @@
 #define HUFFMAN_TREE_H_
 
 // #include <iostream>
-#include <memory>
-#include <vector>
-#include <set>
+#include <map>
+#include<memory>
 
 #include "node.h"
 
 class Tree {
-  Node* root;
-  std::vector<Node> nodes;
-  std::set<char> counts;
+  std::unique_ptr<Node> root;
+  Node* nyt;
+  std::map<char, int> counts;
 
 public:
   Tree();
-  void update(char);
+  void count_symbol(char);
+  void add_node(char);
   bool contains(char);
-
+  
 };
 
 #endif // HUFFMAN_TREE_H_

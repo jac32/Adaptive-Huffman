@@ -2,12 +2,20 @@
 
 // CONSTRUCTORS -----------------------------------------------------------------
 Node::Node() : left(nullptr), right(nullptr) {
-  weight = 0;
+  this->weight = 0;
 }
 
+Node::Node(std::unique_ptr<Node> nyt, char symbol) {
+  this->left = std::move(nyt);
+  this->right = std::unique_ptr<Node>(new Node(symbol));
+}
 
-// DESTRUCTORS ------------------------------------------------------------------
-// SEARCH  ----------------------------------------------------------------------
-// TRAVERSAL --------------------------------------------------------------------
+Node::Node(char symbol) {
+  this->weight = 1;
+  this->symbol = symbol;
+}
 
-
+// WARNING: will return false for orphan nodes
+bool Node::is_left_child() {
+  return parent()->get_left() == this;
+}
