@@ -3,11 +3,8 @@
 #include "tree.hpp"
 
 int main () {
+  Tree t;
+  std::cout << t.contains('a');
   std::cout << std::endl;
-
-  //  Tree *t = new Tree(std::cin, std::cout);
-
   std::cout << "Hello, World!" << std::endl;
-
-  //  delete t;
 }

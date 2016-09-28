@@ -1,4 +1,4 @@
-#include "tree.hpp"
+#include "tree.h"
 // http://www.stringology.org/DataCompression/fgk/index_en.html
 
 
@@ -29,7 +29,7 @@
 //   // TODO: Implement decode
 // }
 
-// void Tree::update(char symbol) {
+void Tree::update(char symbol) {
 //   Node* current_node = new Branch(this->get_zero(), new Leaf(symbol));
 //   Node* swappable;
 //   while (current_node != root) {
@@ -40,7 +40,7 @@
 //     current_node = current_node->get_parent();
 //   }
 //   current_node->inc_weight();
-// }
+}
 
 
 // Node* Tree::has_swappable(Node* changed) {
@@ -60,10 +60,10 @@
 //   b->set_parent(tmp);
 // }
 
-// bool Tree::contains(char) {
-//   return true;
-//   // TODO: Implement contains
-// }
+// TODO: Implement contains
+bool Tree::contains(char) {
+  return true;
+}
 
 // --------------------------------------------------------------------------------
 // Iterator

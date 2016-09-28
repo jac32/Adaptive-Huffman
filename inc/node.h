@@ -1,5 +1,5 @@
-#ifndef HUFFMAN_NODE_HPP_
-#define HUFFMAN_NODE_HPP_
+#ifndef HUFFMAN_NODE_H_
+#define HUFFMAN_NODE_H_
 
 // Classes
 class Branch;
@@ -28,4 +28,4 @@ class Leaf : public Empty {
 };
 
 
-#endif // HUFFMAN_NODE_HPP_
+#endif // HUFFMAN_NODE_H_
