@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "tree.hpp"
+#include "tree.h"
 
 // The fixture for testing class Tree.
 class TreeTest : public testing::Test {
@@ -32,36 +32,31 @@ protected:
   // Objects declared here can be used by all tests in the test case for Tree.
 };
 
-TEST_F(TreeTest, containsFindsUpdatedChars) {
-
+TEST_F(TreeTest, testContainsMethod) {
   Tree t;
 
-  EXPECT_TRUE(true);
+  ASSERT_TRUE(true);
   // Default behaviour should be to return false.
-  EXPECT_FALSE(t.contains('a'));
-  EXPECT_FALSE(t.contains('b'));
+  ASSERT_FALSE(t.contains('a'));
+  ASSERT_FALSE(t.contains('b'));
   
   // The first occurence should switch the contains result.
   t.update('a'); 
-  EXPECT_TRUE(t.contains('a'));
-  EXPECT_FALSE(t.contains('b'));
+  ASSERT_TRUE(t.contains('a'));
+  ASSERT_FALSE(t.contains('b'));
 
   // Additional occurences shouldn't affect the result.
   // But new characters should still change the result.
   t.update('b');
-  EXPECT_TRUE(t.contains('a'));
-  EXPECT_TRUE(t.contains('b'));
+  ASSERT_TRUE(t.contains('a'));
+  ASSERT_TRUE(t.contains('b'));
 
   // Repeated occurrences should not affect results.
   t.update('a');
   t.update('a');
-  EXPECT_TRUE(t.contains('a'));
-  EXPECT_TRUE(t.contains('b'));
+  ASSERT_TRUE(t.contains('a'));
+  ASSERT_TRUE(t.contains('b'));
 }
 
-// Tests that Tree does Xyz.
-TEST_F(TreeTest, DoesXyz) {
-  // Exercises the Xyz feature of Tree.
-}
 
 

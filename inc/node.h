@@ -1,31 +1,20 @@
 #ifndef HUFFMAN_NODE_H_
 #define HUFFMAN_NODE_H_
 
+#include <memory>
+#include <vector>
+
 // Classes
-class Branch;
-class Empty;
-class Leaf;
-class Node;
-class Weighted;
-
 class Node {
-
-};
-class Marker : public Node {
+  int weight;
+  char symbol;
+  Node* left;
+  Node* right;
   
+public:
+  Node();
+  bool is_internal() { return left != nullptr && right != nullptr ; }
+  char get_symbol() { return symbol; }
 };
-class Weighted : public Node {
-  
-};
-class Branch : public Weighted {
-  
-};
-class Empty : public Weighted {
-  
-};
-class Leaf : public Empty {
-  
-};
-
 
 #endif // HUFFMAN_NODE_H_

@@ -1,10 +1,9 @@
 #include <iostream>
 
-#include "tree.hpp"
+#include "tree.h"
 
 int main () {
   Tree t;
-  std::cout << t.contains('a');
   std::cout << std::endl;
   std::cout << "Hello, World!" << std::endl;
 }

@@ -1,8 +1,17 @@
+#include <set>
+
 #include "tree.h"
+
 // http://www.stringology.org/DataCompression/fgk/index_en.html
 
 
 // CONSTRUCTORS & DESTRUCTORS --------------------------------------------------
+Tree::Tree() : nodes() {
+  nodes.push_back(Node());
+  root = &nodes[0];
+}
+
+
 // Tree::Tree(std::istream &input, std::ostream &output) : input(input), output(output) {
 //   root = zero = new Empty();
 //   root->set_parent(new Marker(root));
@@ -30,6 +39,8 @@
 // }
 
 void Tree::update(char symbol) {
+  this->counts.insert(symbol);
+}
 //   Node* current_node = new Branch(this->get_zero(), new Leaf(symbol));
 //   Node* swappable;
 //   while (current_node != root) {
@@ -40,7 +51,7 @@ void Tree::update(char symbol) {
 //     current_node = current_node->get_parent();
 //   }
 //   current_node->inc_weight();
-}
+
 
 
 // Node* Tree::has_swappable(Node* changed) {
@@ -52,17 +63,8 @@ void Tree::update(char symbol) {
 //   }
 // }
 
-
-// void Tree::swap(Node* a, Node* b) {
-//   //swap(a, b);
-//   Node* tmp = a->get_parent();
-//   a->set_parent(b->get_parent());
-//   b->set_parent(tmp);
-// }
-
-// TODO: Implement contains
-bool Tree::contains(char) {
-  return true;
+bool Tree::contains(char symbol) {
+  return this->counts.count(symbol);
 }
 
 // --------------------------------------------------------------------------------
