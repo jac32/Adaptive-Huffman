@@ -11,41 +11,29 @@ Tree::Tree() {
   root = std::unique_ptr<Node>(nyt);
 }
 
-void Tree::count_symbol(char symbol) {
-  if(!counts.count(symbol)) {
-    std::unique_ptr<Node> owned_nyt;
+void Tree::update_symbol(char symbol) {
+  // if(!contains(symbol)) {
+  //   if (nyt == root.get()) {
+  //     root.release();
+  //     root = std::unique_ptr<Node>(new Node(nyt, symbol));
+  //   } else {
+  //     Node* parent = nyt->get_parent();
 
-    if (nyt->get_parent() == nullptr) {
-      owned_nyt = std::move(root);
-      auto branch = new Node(owned_nyt, symbol);
-      root = std::unique_ptr<Node>(branch);
-
-    } else {
-      add_branch(nyt, symbol);
-    }
-  } else {
-    
-  }
-
-  counts[symbol]++;
-}
-
-
-void add_branch(Node* nyt, char symbol) {
-  Node* parent = nyt->get_parent();
-
-  if (nyt->is_left_child()) {
-    owned_nyt = nyt->parent()->take_left();
-    Node* branch = std::unique_ptr<Node>(new Node(owned_nyt, symbol));
-    parent->set_left(branch);
-  } else {
-    owned_nyt = nyt->parent()->take_right();
-    Node* branch = std::unique_ptr<Node>(new Node(owned_nyt, symbol));
-    parent->set_right(branch);
-  }
+  //     if (nyt->is_left_child()) {
+  //     	nyt->get_parent()->release_left();
+  //     	parent->set_left(new Node(nyt, symbol));
+  //     } else {
+  //     	nyt->get_parent()->release_right();
+  //     	parent->set_right(new Node(nyt, symbol));
+  //     }
+  //   }
+  // } else {
+  //   leaves[symbol]->inc_weight();
+  //     // TODO: rebalance tree
+  // }
 }
 
 
 bool Tree::contains(char symbol) {
-  return counts.count(symbol);
+  return leaves.count(symbol);
 }

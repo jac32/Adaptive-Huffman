@@ -10,14 +10,13 @@
 class Tree {
   std::unique_ptr<Node> root;
   Node* nyt;
-  std::map<char, int> counts;
+  std::map<char, Node*> leaves;
 
 public:
   Tree();
-  void count_symbol(char);
+  void update_symbol(char);
   void add_node(char);
   bool contains(char);
-  
 };
 
 #endif // HUFFMAN_TREE_H_
