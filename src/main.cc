@@ -4,6 +4,6 @@
 
 int main () {
   Tree t;
-  std::cout << std::endl;
-  std::cout << "Hello, World!" << std::endl;
+  t.process_symbol('a');
+  t.process_symbol('b');
 }

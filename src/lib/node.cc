@@ -1,17 +1,26 @@
+#include <assert.h>
+
 #include "node.h"
 
 // CONSTRUCTORS -----------------------------------------------------------------
 Node::Node() : left(nullptr), right(nullptr) {
-  this->weight = 0;
+  weight = 0;
+  parent = nullptr;
 }
 
-Node::Node(Node* nyt, char symbol) {
-  this->left = std::unique_ptr<Node>(nyt);
-  this->right = std::unique_ptr<Node>(new Node(symbol));
+Node::Node(Node* nyt, Node* leaf) {
+  parent = nullptr;
+  left = std::unique_ptr<Node>(nyt);
+  right = std::unique_ptr<Node>(leaf);
+
+  left->set_parent(this);
+  right->set_parent(this);
+  weight = left->get_weight() + right -> get_weight();
 }
 
 Node::Node(char symbol) {
-  this->weight = 1;
+  weight = 1;
+  parent = nullptr;
   this->symbol = symbol;
 }
 

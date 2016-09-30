@@ -8,15 +8,22 @@
 #include "node.h"
 
 class Tree {
-  std::unique_ptr<Node> root;
   Node* nyt;
+  std::unique_ptr<Node> root;
+  std::map<int, Node*> groups;
   std::map<char, Node*> leaves;
 
 public:
   Tree();
-  void update_symbol(char);
-  void add_node(char);
+  void process_symbol(char);
   bool contains(char);
+  int total_weight() { return root->get_weight(); }
+
+  void update_weight(Node*);
+
+  // Accessors
+  Node* get_root() { return root.get(); };
+  Node* get_weight_group(int weight) { return groups[weight]; }
 };
 
 #endif // HUFFMAN_TREE_H_
