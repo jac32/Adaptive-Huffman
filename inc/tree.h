@@ -19,10 +19,11 @@ public:
   bool contains(char);
   int total_weight() { return root->get_weight(); }
 
-  void update_weight(Node*);
+  void change_weight(Node*, int);
+  void perform_swap(Node*);
 
   // Accessors
-  Node* get_root() { return root.get(); };
+  Node* get_root() { return root.get(); }
   Node* get_weight_group(int weight) { return groups[weight]; }
 };
 

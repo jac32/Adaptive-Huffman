@@ -9,17 +9,17 @@ Node::Node() : left(nullptr), right(nullptr) {
 }
 
 Node::Node(Node* nyt, Node* leaf) {
+  weight = 0;
   parent = nullptr;
   left = std::unique_ptr<Node>(nyt);
   right = std::unique_ptr<Node>(leaf);
 
   left->set_parent(this);
   right->set_parent(this);
-  weight = left->get_weight() + right -> get_weight();
 }
 
 Node::Node(char symbol) {
-  weight = 1;
+  weight = 0;
   parent = nullptr;
   this->symbol = symbol;
 }

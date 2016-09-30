@@ -13,43 +13,52 @@ Tree::Tree() {
 }
 
 void Tree::process_symbol(char symbol) {
+  Node* leaf;
 
+  // This is a symbol Not Yet Transmitted
   if(!contains(symbol)) {
 
-    Node* leaf = new Node(symbol);
+    // Create a new zero-weighted leaf node
+    leaf = new Node(symbol);
 
+    // Runs when transmitting the first symbol
     if (nyt == get_root()) {
+      // TODO: Is the release required by the unique_ptr?
       root.release();
       root = std::unique_ptr<Node>(new Node(nyt, leaf));
     }
-
+    // Split the NYT Node into a NYT and a new leaf
     else {
       Node* parent = nyt->get_parent();
       parent->release_left();
       parent->set_left(new Node(nyt, leaf));
     }
 
+    // Add the leaf Node to the symbol map
     leaves[symbol] = leaf;
   }
-
+  // This symbol has been seen before, so we can
+  // update the corresponding leaf node
   else {
     // TODO: register weight change on increment
-    leaves[symbol]->inc_weight();
+    leaf = leaves[symbol];
   }
-
-  Node* ptr = leaves[symbol].get_parent();
-
 
   // TODO: Check for swaps before updating weights
 
-  while (ptr.get_parent() != nullptr) {
-    update_weight(ptr);
-    ptr = ptr->get_parent();
+  while (leaf.get_parent() != nullptr) {
+    perform_swap(leaf);
+    update_weight(leaf);
+    leaf = leaf->get_parent();
   }
 }
 
+void perform_swap() {
+  
+}
 
-void Tree::update_weight(Node* changed) {
+
+void Tree::change_weight(Node* changed, int new_weight) {
 
   Node* current_next = changed->get_group_next();
   Node* current_prev = changed->get_group_prev();
