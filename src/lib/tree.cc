@@ -5,7 +5,7 @@
 
 // http://www.stringology.org/DataCompression/fgk/index_en.html
 
-
+ 
 // CONSTRUCTORS & DESTRUCTORS --------------------------------------------------
 Tree::Tree() {
   nyt = new Node();
@@ -30,7 +30,6 @@ void Tree::process_symbol(char symbol) {
     // Split the NYT Node into a NYT and a new leaf
     else {
       Node* parent = nyt->get_parent();
-      parent->release_left();
       parent->set_left(new Node(nyt, leaf));
     }
 
@@ -47,14 +46,33 @@ void Tree::process_symbol(char symbol) {
   // TODO: Check for swaps before updating weights
 
   while (leaf.get_parent() != nullptr) {
-    perform_swap(leaf);
+    if (leaf->get_weight() > 0) perform_swap(leaf);
     update_weight(leaf);
     leaf = leaf->get_parent();
   }
 }
 
-void perform_swap() {
+//TODO: Does this correctly handle root case?
+void perform_swap(Node* lower) {
+
+  // The head of the list is the highest ordering
+  Node* upper = groups[lower->weight];
+
+  // If the lower Node is the head then no swap will be valid.
+  if (upper == lower) { return; }
+
+  Node* upper_parent = upper->get_parent();
+  Node* lower_parent = lower->get_parent();
+
+  bool upper_is_left_child = upper_parent->get_left() == upper;
+  bool lower_is_left_child = lower_parent->get_left() == lower;
   
+  upper_is_left_child ? upper_parent->set_left(lower) : upper_parent->set_right(lower);
+  lower_is_left_child ? lower_parent->set_left(upper) : lower_parent->set_right(upper);
+
+
+  // TODO: Swap in group lists too
+
 }
 
 

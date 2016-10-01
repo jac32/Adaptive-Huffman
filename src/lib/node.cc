@@ -24,7 +24,3 @@ Node::Node(char symbol) {
   this->symbol = symbol;
 }
 
-// WARNING: will return false for orphan nodes
-bool Node::is_left_child() {
-  return parent->get_left() == this;
-}

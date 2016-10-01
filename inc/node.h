@@ -18,8 +18,6 @@ public:
   Node();
   Node(char);
   Node(Node*, Node*);
-  bool is_internal() { return left != nullptr && right != nullptr ; }
-  bool is_left_child();
   void update_weight();
 
   // Accessors
@@ -34,12 +32,10 @@ public:
   void set_group_next(Node* next) { group_next = next; };
   void set_group_prev(Node* prev) { group_prev = prev; };
   void set_parent(Node* parent) { this->parent = parent; }
-
-
   void set_weight(int weight) { this->weight = weight; }
 
-  void release_left() { left.release(); }
   void set_left(Node* new_left) {
+    left.release(); 
     left = std::unique_ptr<Node>(new_left); left->set_parent(this);
   }
 
