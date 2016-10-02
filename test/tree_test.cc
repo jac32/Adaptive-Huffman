@@ -3,7 +3,7 @@
 #include "tree.h"
 
 TEST(TreeTest, testContainsMethod) {
-  Tree t;
+  Tree t(std::cout);
 
   EXPECT_TRUE(true);
   // Default behaviour should be to return false.
@@ -29,28 +29,28 @@ TEST(TreeTest, testContainsMethod) {
 }
 
 TEST(TreeTest, testWeightAfterAddition) {
-  Tree t;
-  EXPECT_EQ(t.total_weight(), 0);
+  Tree t(std::cout);
+  EXPECT_EQ(t.get_root()->get_weight(), 0);
   // First occurence of any symbol should increment once 
   t.process_symbol('a');
-  EXPECT_EQ(t.total_weight(), 1);
+  EXPECT_EQ(t.get_root()->get_weight(), 1);
 
   // New symbols should also increment the weight
   t.process_symbol('b');
-  EXPECT_EQ(t.total_weight(), 2);
+  EXPECT_EQ(t.get_root()->get_weight(), 2);
 
   // Further reptition should be counted
   t.process_symbol('a');
-  EXPECT_EQ(t.total_weight(), 3);
+  EXPECT_EQ(t.get_root()->get_weight(), 3);
 }
 
 
 TEST(TreeTest, testWeightGroups) {
-  Tree t;
+  Tree t(std::cout);
   for (char c: "abccdd") t.process_symbol(c);
   EXPECT_EQ(t.get_weight_group(1)->get_symbol(), 'a');
-  EXPECT_EQ(t.get_weight_group(1)->group_next()->get_symbol(), 'b');
+  EXPECT_EQ(t.get_weight_group(1)->get_group_next()->get_symbol(), 'b');
   EXPECT_EQ(t.get_weight_group(2)->get_symbol(), 'c');
-  EXPECT_EQ(t.get_weight_group(2)->group_next()->get_symbol(), 'd');
+  EXPECT_EQ(t.get_weight_group(2)->get_group_next()->get_symbol(), 'd');
 
 }

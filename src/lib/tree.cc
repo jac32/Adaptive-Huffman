@@ -3,13 +3,10 @@
 
 #include "tree.h"
 
-// http://www.stringology.org/DataCompression/fgk/index_en.html
 
- 
-// CONSTRUCTORS & DESTRUCTORS --------------------------------------------------
-Tree::Tree() {
-  nyt = new Node();
-  root = std::unique_ptr<Node>(nyt);
+Tree::Tree(std::ostream& output) : output(output) {
+  this->root = std::unique_ptr<Node>(new Node());
+  this->nyt = this->root.get();
 }
 
 void Tree::process_symbol(char symbol) {
@@ -17,50 +14,58 @@ void Tree::process_symbol(char symbol) {
 
   // This is a symbol Not Yet Transmitted
   if(!contains(symbol)) {
+	// Raw symbols preceded by NYT path
+	std::cout << "Transmitting NYT "; 
+	this->nyt->transmit_path(this->output);
+	std::cout << std::endl;
 
-    // Create a new zero-weighted leaf node
+	// TODO: push raw symbol
+	std::cout << std::bitset<8>(symbol) << std::endl;
+	
     leaf = new Node(symbol);
 
-    // Runs when transmitting the first symbol
-    if (nyt == get_root()) {
-      // TODO: Is the release required by the unique_ptr?
-      root.release();
-      root = std::unique_ptr<Node>(new Node(nyt, leaf));
-    }
     // Split the NYT Node into a NYT and a new leaf
-    else {
-      Node* parent = nyt->get_parent();
-      parent->set_left(new Node(nyt, leaf));
+    // and set new root when transmitting the first symbol
+    if (nyt == get_root()) {
+	  this->set_root(new Node(nyt, leaf));
     }
-
+	else {
+      nyt->get_parent()->set_left(new Node(nyt, leaf));
+    }
     // Add the leaf Node to the symbol map
     leaves[symbol] = leaf;
   }
-  // This symbol has been seen before, so we can
-  // update the corresponding leaf node
   else {
-    // TODO: register weight change on increment
+	// This symbol has been seen before, so we can
+	// update the corresponding leaf node
     leaf = leaves[symbol];
+
+	std::cout << "Begin transmitting " << symbol << "..." << std::endl;
+	leaf->transmit_path(this->output);
+	std::cout << "Done transmitting " << symbol << "..." << std::endl;
+	std::cout << std::endl;
   }
 
-  // TODO: Check for swaps before updating weights
-
-  while (leaf.get_parent() != nullptr) {
+  // Since the leaf's weight has changed, parent weights and
+  // weight groups will need updated.
+  while (leaf->get_parent() != nullptr) {
     if (leaf->get_weight() > 0) perform_swap(leaf);
     update_weight(leaf);
     leaf = leaf->get_parent();
   }
 }
 
-//TODO: Does this correctly handle root case?
-void perform_swap(Node* lower) {
+// Expects weight > 0
+void Tree::perform_swap(Node* lower) {
+  int weight_class = lower->get_weight();
 
   // The head of the list is the highest ordering
-  Node* upper = groups[lower->weight];
+  Node* upper = groups[weight_class];
 
   // If the lower Node is the head then no swap will be valid.
-  if (upper == lower) { return; }
+  if (upper == nullptr || upper == lower) { return; }
 
+  // TODO: why is upper nullptr? 
   Node* upper_parent = upper->get_parent();
   Node* lower_parent = lower->get_parent();
 
@@ -70,22 +75,46 @@ void perform_swap(Node* lower) {
   upper_is_left_child ? upper_parent->set_left(lower) : upper_parent->set_right(lower);
   lower_is_left_child ? lower_parent->set_left(upper) : lower_parent->set_right(upper);
 
+  groups[weight_class] = lower;
 
-  // TODO: Swap in group lists too
+  
+  // TODO: This might be quicker if the data for the two nodes were swapped
+  // Would likely involve extensive rewrite and benchmarking, seems premature.
 
+  // BEGIN: Group swap from http://ptspts.blogspot.co.uk/2010/01/how-to-swap-two-nodes-in-doubly-linked.html
+  Node* temp;
+  
+  temp = lower->get_group_next();
+  lower->set_group_next(upper->get_group_next());
+  upper->set_group_next(temp);
+  lower->get_group_next()->set_group_next(lower);
+  upper->get_group_next()->set_group_next(upper);
+
+  temp = lower->get_group_prev();
+  lower->set_group_prev(upper->get_group_prev());
+  upper->set_group_prev(temp);
+  lower->get_group_prev()->set_group_next(lower);
+  upper->get_group_prev()->set_group_next(upper);
+  // END: Group swap from http://ptspts.blogspot.co.uk/2010/01/how-to-swap-two-nodes-in-doubly-linked.html
 }
 
+void Tree::update_weight(Node* update_node) {
+  if (update_node->get_left() == nullptr && update_node->get_left() == nullptr){
+    change_weight(update_node, update_node->get_weight() + 1);
+  }
+  else { 
+    int left_weight = update_node->get_left()->get_weight();
+    int right_weight = update_node->get_right()->get_weight();
+    change_weight(update_node, left_weight + right_weight);
+  }
+}
 
 void Tree::change_weight(Node* changed, int new_weight) {
 
   Node* current_next = changed->get_group_next();
   Node* current_prev = changed->get_group_prev();
 
-  int left_child_weight = changed->get_left()->get_weight() 
-  int right_child_weight =  changed->get_right()->get_weight();
-
   int current_weight = changed->get_weight();
-  int new_weight = left_child_weight + right_child_weight;
 
   bool is_head = groups[current_weight] == changed;
   bool is_only = current_next == changed;
@@ -94,22 +123,22 @@ void Tree::change_weight(Node* changed, int new_weight) {
   // Update old group mapping
   if (is_head && is_only) {
     groups.erase(current_weight);
-  } else if (is_head) {
-    groups[old_weight] = current_next;
+  }
+  else if (is_head) {
+    groups[current_weight] = current_next;
   }
 
   // Update current neighbors to point to each other
   // (i.e. linked list deletion)
-  current_next->set_prev(current_prev);
-  current_prev->set_next(current_next);
+  current_next->set_group_prev(current_prev);
+  current_prev->set_group_next(current_next);
 
   // Update new group pointers
 
   // Group already exists
-  Node* group_head = groups[new_weight];
-  if (group_head != groups.end()) {
-    Node* new_next = group_head;
-    Node* new_prev = group_head->get_group_prev();
+  if (groups.count(new_weight)) {
+    Node* new_next = groups[new_weight];
+    Node* new_prev = groups[new_weight]->get_group_prev();
 
     new_prev->set_group_next(changed);
     new_next->set_group_prev(changed);
