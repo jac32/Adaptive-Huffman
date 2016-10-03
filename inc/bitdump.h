@@ -14,6 +14,7 @@ public:
   ~BitDump();
   void flush();
   void push(bool input);
+  void push_byte(char input);
   //  BitDump& operator<<(bool input);
 };
 

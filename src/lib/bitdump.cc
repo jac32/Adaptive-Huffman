@@ -34,6 +34,14 @@ void BitDump::push(bool input) {
   buffer.push_front(input);
 }
 
+void BitDump::push_byte(char input) {
+  std::cout << "Pushing byte: " << std::bitset<8>(input) << std::endl;
+   unsigned char mask = 0x80;
+   while (mask > 0) {
+	 push(mask & input);
+	 mask >>= 1;
+   }
+}
 // BitDump& BitDump::operator<<(bool input) {
 //   this->push(input);
 //   return (*this)&;

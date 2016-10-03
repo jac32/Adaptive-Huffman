@@ -15,12 +15,9 @@ void Tree::process_symbol(char symbol) {
   // This is a symbol Not Yet Transmitted
   if(!contains(symbol)) {
 	// Raw symbols preceded by NYT path
-	std::cout << "Transmitting NYT "; 
 	this->nyt->transmit_path(this->output);
-	std::cout << std::endl;
 
-	// TODO: push raw symbol
-	std::cout << std::bitset<8>(symbol) << std::endl;
+	output.push_byte(symbol);
 	
     leaf = new Node(symbol);
 

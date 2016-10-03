@@ -16,6 +16,8 @@
 
 #include "bitdump.h"
 
+//TODO: Is member encapsulation necessary when Tree is friend class?
+
 // Classes
 class Node {
   friend class Tree; ///< The tree structure manages and manipulates its nodes
