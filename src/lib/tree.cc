@@ -161,3 +161,11 @@ void Tree::change_weight(Node* changed, int new_weight) {
 bool Tree::contains(char symbol) {
   return leaves.count(symbol);
 }
+
+Node* Tree::get_root() { return root.get(); } 
+Node* Tree::get_weight_group(int weight) { return groups[weight]; }
+
+void Tree::set_root(Node* root) {
+	this->root.release();
+	this->root = std::unique_ptr<Node>(root);
+}

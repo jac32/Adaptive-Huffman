@@ -25,11 +25,11 @@
 /// @brief Adaptive Huffman code tree
 ///
 // TODO: class Tree detailed explanation
-///
 class Tree {
 
   // TODO: allow streaming input
   //  std::istream& input;
+
   BitDump output; ///< Buffered output stream
   Node* nyt;      ///< Maintained pointer to the NYT node
 
@@ -37,23 +37,20 @@ class Tree {
   std::map<int, Node*> groups;  ///< Mapping from weight to heighest node of weight
   std::map<char, Node*> leaves; ///< Mapping from symbol to representing leaf
 
-public:
-  Tree(std::ostream&);         ///< Standard constructor
-  void process_symbol(char);   ///< Encode a single symbol and update structure
-  bool contains(char);         ///< Has the tree previously encoded the given symbol
-  void update_weight(Node*);   ///< Increment leaf weight or recalculate branch weight
+  void update_weight(Node*);      ///< Increment leaf weight or recalculate branch weight
   void change_weight(Node*, int); ///< Change node weight, while maintaining groups
-  void perform_swap(Node*);    ///< Swap the node with the heighest weighted in group
+  void perform_swap(Node*);       ///< Swap the node with the heighest weighted in group
 
   // Accessors
-  Node* get_root() { return root.get(); }
-  Node* get_weight_group(int weight) { return groups[weight]; }
+  Node* get_root();                    ///< Provides a ptr to the root node
+  Node* get_weight_group(int weight);  ///< Provides a ptr to the head of the weight group
 
   // Mutators
-  void set_root(Node* root) {
-	this->root.release();
-	this->root = std::unique_ptr<Node>(root);
-  }
-};
+  void set_root(Node* root);  ///< Takes ownership of the new node (releases old)
 
+public:
+  Tree(std::ostream&);            ///< Standard constructor
+  bool contains(char);            ///< Has the tree previously encoded the given symbol
+  void process_symbol(char);      ///< Encode a single symbol and update structure
+ };
 #endif // HUFFMAN_TREE_H_

@@ -12,12 +12,12 @@ int main () {
   t.process_symbol('a');
   t.process_symbol('b');
   t.process_symbol('b');
-  t.process_symbol('b');
-  t.process_symbol('b');
-  t.process_symbol('b');
-  t.process_symbol('b');
-  t.process_symbol('b');
-  t.process_symbol('b');
+  // t.process_symbol('b');
+  // t.process_symbol('b');
+  // t.process_symbol('b');
+  // t.process_symbol('b');
+  // t.process_symbol('b');
+  // t.process_symbol('b');
 
 
 

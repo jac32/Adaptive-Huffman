@@ -43,3 +43,25 @@ void Node::transmit_path(BitDump& output) {
   }
 }
 
+// Accessors
+Node* Node::get_group_next() { return group_next; }
+Node* Node::get_group_prev() { return group_prev; }
+Node* Node::get_parent() { return parent; }
+Node* Node::get_left() { return left.get(); }
+Node* Node::get_right() { return right.get(); }
+
+// Mutators
+void Node::set_group_next(Node* next) { group_next = next; };
+void Node::set_group_prev(Node* prev) { group_prev = prev; };
+void Node::set_parent(Node* parent) { this->parent = parent; }
+void Node::set_weight(int weight) { this->weight = weight; }
+
+void Node::set_left(Node* new_left) {
+  left.release(); 
+  left = std::unique_ptr<Node>(new_left); left->set_parent(this);
+}
+void Node::set_right(Node* new_right) {
+  right.release(); 
+  right = std::unique_ptr<Node>(new_right); right->set_parent(this);
+}
+
