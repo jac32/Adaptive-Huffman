@@ -1,12 +1,25 @@
 #include <set>
+#include <string>
 #include <iostream>
 
 #include "tree.h"
 
 
-Tree::Tree(std::ostream& output) : output(output) {
-  this->root = std::unique_ptr<Node>(new Node());
-  this->nyt = this->root.get();
+Tree::Tree(std::istream& input, std::ostream& output) : input(input), output(output) {
+  root = std::unique_ptr<Node>(new Node());
+  nyt = this->root.get();
+}
+
+void Tree::encode() {
+  char input_byte;
+  do {
+	input_byte = input.get();
+	if (input_byte == std::char_traits<wchar_t>::eof()) {
+	  break;
+	}
+	process_symbol(input_byte);
+  }
+  while (input_byte);
 }
 
 void Tree::process_symbol(char symbol) {
@@ -27,7 +40,7 @@ void Tree::process_symbol(char symbol) {
 	  this->set_root(new Node(nyt, leaf));
     }
 	else {
-      nyt->get_parent()->set_left(new Node(nyt, leaf));
+      nyt->parent->set_left(new Node(nyt, leaf));
     }
     // Add the leaf Node to the symbol map
     leaves[symbol] = leaf;
@@ -36,25 +49,21 @@ void Tree::process_symbol(char symbol) {
 	// This symbol has been seen before, so we can
 	// update the corresponding leaf node
     leaf = leaves[symbol];
-
-	std::cout << "Begin transmitting " << symbol << "..." << std::endl;
 	leaf->transmit_path(this->output);
-	std::cout << "Done transmitting " << symbol << "..." << std::endl;
-	std::cout << std::endl;
   }
 
   // Since the leaf's weight has changed, parent weights and
   // weight groups will need updated.
-  while (leaf->get_parent() != nullptr) {
-    if (leaf->get_weight() > 0) perform_swap(leaf);
+  while (leaf->parent != nullptr) {
+    if (leaf->weight > 0) perform_swap(leaf);
     update_weight(leaf);
-    leaf = leaf->get_parent();
+    leaf = leaf->parent;
   }
 }
 
 // Expects weight > 0
 void Tree::perform_swap(Node* lower) {
-  int weight_class = lower->get_weight();
+  int weight_class = lower->weight;
 
   // The head of the list is the highest ordering
   Node* upper = groups[weight_class];
@@ -63,17 +72,17 @@ void Tree::perform_swap(Node* lower) {
   if (upper == nullptr || upper == lower) { return; }
 
   // TODO: why is upper nullptr? 
-  Node* upper_parent = upper->get_parent();
-  Node* lower_parent = lower->get_parent();
+  Node* upper_parent = upper->parent;
+  Node* lower_parent = lower->parent;
 
-  bool upper_is_left_child = upper_parent->get_left() == upper;
-  bool lower_is_left_child = lower_parent->get_left() == lower;
+  bool upper_is_left_child = upper_parent->left.get() == upper;
+  bool lower_is_left_child = lower_parent->left.get() == lower;
   
   upper_is_left_child ? upper_parent->set_left(lower) : upper_parent->set_right(lower);
   lower_is_left_child ? lower_parent->set_left(upper) : lower_parent->set_right(upper);
 
+  // Swap head pointer
   groups[weight_class] = lower;
-
   
   // TODO: This might be quicker if the data for the two nodes were swapped
   // Would likely involve extensive rewrite and benchmarking, seems premature.
@@ -81,37 +90,36 @@ void Tree::perform_swap(Node* lower) {
   // BEGIN: Group swap from http://ptspts.blogspot.co.uk/2010/01/how-to-swap-two-nodes-in-doubly-linked.html
   Node* temp;
   
-  temp = lower->get_group_next();
-  lower->set_group_next(upper->get_group_next());
-  upper->set_group_next(temp);
-  lower->get_group_next()->set_group_next(lower);
-  upper->get_group_next()->set_group_next(upper);
+  temp = lower->group_next;
+  lower->group_next = upper->group_next;
+  upper->group_next = temp;
+  lower->group_next->group_prev = lower;
+  upper->group_next->group_prev = upper;
 
-  temp = lower->get_group_prev();
-  lower->set_group_prev(upper->get_group_prev());
-  upper->set_group_prev(temp);
-  lower->get_group_prev()->set_group_next(lower);
-  upper->get_group_prev()->set_group_next(upper);
+  temp = lower->group_prev;
+  lower->group_prev = upper->group_prev;
+  upper->group_prev = temp;
+  lower->group_prev->group_next = lower;
+  upper->group_prev->group_next = upper;
   // END: Group swap from http://ptspts.blogspot.co.uk/2010/01/how-to-swap-two-nodes-in-doubly-linked.html
 }
 
 void Tree::update_weight(Node* update_node) {
-  if (update_node->get_left() == nullptr && update_node->get_left() == nullptr){
-    change_weight(update_node, update_node->get_weight() + 1);
+  if (update_node->left == nullptr && update_node->left == nullptr){
+    change_weight(update_node, update_node->weight + 1);
   }
   else { 
-    int left_weight = update_node->get_left()->get_weight();
-    int right_weight = update_node->get_right()->get_weight();
+    int left_weight = update_node->left->weight;
+    int right_weight = update_node->right->weight;
     change_weight(update_node, left_weight + right_weight);
   }
 }
 
 void Tree::change_weight(Node* changed, int new_weight) {
+  Node* current_next = changed->group_next;
+  Node* current_prev = changed->group_prev;
 
-  Node* current_next = changed->get_group_next();
-  Node* current_prev = changed->get_group_prev();
-
-  int current_weight = changed->get_weight();
+  int current_weight = changed->weight;
 
   bool is_head = groups[current_weight] == changed;
   bool is_only = current_next == changed;
@@ -127,31 +135,31 @@ void Tree::change_weight(Node* changed, int new_weight) {
 
   // Update current neighbors to point to each other
   // (i.e. linked list deletion)
-  current_next->set_group_prev(current_prev);
-  current_prev->set_group_next(current_next);
+  current_next->group_prev = current_prev;
+  current_prev->group_next = current_next;
 
   // Update new group pointers
 
   // Group already exists
   if (groups.count(new_weight)) {
     Node* new_next = groups[new_weight];
-    Node* new_prev = groups[new_weight]->get_group_prev();
+    Node* new_prev = groups[new_weight]->group_prev;
 
-    new_prev->set_group_next(changed);
-    new_next->set_group_prev(changed);
+    new_prev->group_next = changed;
+    new_next->group_prev = changed;
 
-    changed->set_group_prev(new_prev);
-    changed->set_group_next(new_next);
+    changed->group_prev = new_prev;
+    changed->group_next = new_next;
   }
   // Create a new group with the changed node as head
   else {
     groups[new_weight] = changed;
-    changed->set_group_prev(changed);
-    changed->set_group_next(changed);
+    changed->group_prev = changed;
+    changed->group_next = changed;
   }
 
   // Actually set the node's weight
-  changed->set_weight(new_weight);
+  changed->weight = new_weight;
 }
 
 

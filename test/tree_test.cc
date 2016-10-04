@@ -3,7 +3,7 @@
 #include "tree.h"
 
 TEST(TreeTest, testContainsMethod) {
-  Tree t(std::cout);
+  Tree t(std::cin, std::cout);
 
   EXPECT_TRUE(true);
   // Default behaviour should be to return false.

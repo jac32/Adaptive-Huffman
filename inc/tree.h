@@ -27,8 +27,7 @@
 // TODO: class Tree detailed explanation
 class Tree {
 
-  // TODO: allow streaming input
-  //  std::istream& input;
+  std::istream& input;
 
   BitDump output; ///< Buffered output stream
   Node* nyt;      ///< Maintained pointer to the NYT node
@@ -49,8 +48,9 @@ class Tree {
   void set_root(Node* root);  ///< Takes ownership of the new node (releases old)
 
 public:
-  Tree(std::ostream&);            ///< Standard constructor
+  Tree(std::istream&, std::ostream&);            ///< Standard constructor
   bool contains(char);            ///< Has the tree previously encoded the given symbol
   void process_symbol(char);      ///< Encode a single symbol and update structure
+  void encode();
  };
 #endif // HUFFMAN_TREE_H_

@@ -37,22 +37,8 @@ class Node {
 
 
   void transmit_path(BitDump&);
-  
-  // Accessors
-  Node* get_group_next();
-  Node* get_group_prev(); 
-  Node* get_parent();
-  Node* get_left();
-  Node* get_right();
-
-  // Mutators
-  void set_group_next(Node* next);
-  void set_group_prev(Node* prev);
-  void set_parent(Node* parent);
-  void set_weight(int weight);
-
-  void set_left(Node* new_left); 
-  void set_right(Node* new_right); 
+  void set_left(Node*);
+  void set_right(Node*);
 
 public:
   char get_symbol() { return symbol; }

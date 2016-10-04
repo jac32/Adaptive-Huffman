@@ -1,3 +1,4 @@
+#include <stack>
 #include <assert.h>
 
 #include "node.h"
@@ -17,8 +18,8 @@ Node::Node(Node* nyt, Node* leaf) {
   left = std::unique_ptr<Node>(nyt);
   right = std::unique_ptr<Node>(leaf);
 
-  left->set_parent(this);
-  right->set_parent(this);
+  left->parent = this;
+  right->parent = this;
 
   group_next = this;
   group_prev = this;
@@ -34,34 +35,31 @@ Node::Node(char symbol) {
 
 // TODO: Handle root case
 void Node::transmit_path(BitDump& output) {
-  Node* parent = this->parent;
+  std::stack<bool> path;
+
   Node* child = this;
+  Node* parent = this->parent;
   while (parent != nullptr) {
-	output.push((child == parent->get_left() ?  0 : 1));
+	assert(child->group_next->weight == child->weight);
+	path.push((child == parent->left.get() ?  0 : 1));
 	child = parent;
-	parent = parent->get_parent();
+	parent = parent->parent;
+  }
+
+  while (path.size() > 0) {
+	output.push(path.top());
+	path.pop();
   }
 }
 
-// Accessors
-Node* Node::get_group_next() { return group_next; }
-Node* Node::get_group_prev() { return group_prev; }
-Node* Node::get_parent() { return parent; }
-Node* Node::get_left() { return left.get(); }
-Node* Node::get_right() { return right.get(); }
-
-// Mutators
-void Node::set_group_next(Node* next) { group_next = next; };
-void Node::set_group_prev(Node* prev) { group_prev = prev; };
-void Node::set_parent(Node* parent) { this->parent = parent; }
-void Node::set_weight(int weight) { this->weight = weight; }
-
-void Node::set_left(Node* new_left) {
-  left.release(); 
-  left = std::unique_ptr<Node>(new_left); left->set_parent(this);
+void Node::set_left(Node* left) {
+  this->left.release(); 
+  this->left = std::unique_ptr<Node>(left);
+  this->left->parent = this;
 }
-void Node::set_right(Node* new_right) {
-  right.release(); 
-  right = std::unique_ptr<Node>(new_right); right->set_parent(this);
+void Node::set_right(Node* right) {
+  this->right.release(); 
+  this->right = std::unique_ptr<Node>(right);
+  this->right->parent = this;
 }
 

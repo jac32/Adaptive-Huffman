@@ -1,28 +1,19 @@
 #include <iostream>
+#include <fstream>
+#include <sstream>
 
 #include "tree.h"
 
 int main () {
-  Tree t(std::cout);
-  t.process_symbol('a');
-  t.process_symbol('b');
-  // t.process_symbol('a');
-  // t.process_symbol('a');
-  // t.process_symbol('a');
-  // t.process_symbol('a');
-  // t.process_symbol('b');
-  // t.process_symbol('b');
-  // t.process_symbol('b');
-  // t.process_symbol('b');
-  // t.process_symbol('b');
-  // t.process_symbol('b');
-  // t.process_symbol('b');
-  // t.process_symbol('b');
+  // Initialize input, output and data structure
+  std::fstream input ("compressed.huff", std::fstream::in);
+  //std::fstream output ("compressed.huff", std::fstream::in | std::fstream::out);
 
+  Tree t(input, std::cout);
 
+  t.decode();
 
-
-
-  // t.process_symbol('a');
-  // t.process_symbol('a');
+  // Cleanup
+  input.close();
+  output.close();
 }
