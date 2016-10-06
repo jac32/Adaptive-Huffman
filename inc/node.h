@@ -16,9 +16,14 @@
 
 #include "buffer.h"
 
-//TODO: Is member encapsulation necessary when Tree is friend class?
-
-// Classes
+/// @brief Node class for Adaptive Huffman code tree
+///
+/// Implementation prioritizes time over memory.
+/// Similarly, inexperience with C++ prevented splitting different node types into
+/// seperate classes.
+/// This means the tree likely has a substantially higher space complexity than could be
+/// accomplished with a nicer Node model which utilises inheritance to capture the behavior
+/// of Leaves, Branches and the NYT node.
 class Node {
   friend class Tree; ///< The tree structure manages and manipulates its nodes
 
@@ -35,16 +40,18 @@ class Node {
   Node(char);          ///< Constructor for leaf Node
   Node(Node*, Node*);  ///< Constructor for branch Node
 
+  void transmit_path(OutputBuffer&); ///< Pushes the path to this node to the output buffer (left = 0, right = 1)
 
-  void transmit_path(OutputBuffer&);
-  void set_left(Node*);
-  void set_right(Node*);
+  void set_left(Node*);   ///< Releases the left node and takes ownership of the given node
+  void set_right(Node*);  ///< Releases the right node and takes ownership of the given node
+
 
 public:
-  bool is_leaf() { return left == nullptr && right == nullptr; }
-  char get_symbol() { return symbol; }
-  int get_weight() { return weight; }
-  Node* next(bool go_right) { return go_right ? right.get() : left.get(); }
+  bool is_leaf();                 ///< Checks if the current node has any children
+  Node* get_next(bool go_right);  ///< Gets the node in the given direction (left = 0, right = 1)
+
+  int get_weight();   ///< Get the Node's associated weight
+  char get_symbol();  ///< Get the Node's associated symbol
 };
 
 #endif // HUFFMAN_NODE_H_

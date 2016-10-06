@@ -46,7 +46,6 @@ bool InputBuffer::eof() {
 
 byte InputBuffer::receive_byte() {
   if (stream.eof()) {
-	std::cerr << "YAY!" << std::endl;
 	while (size() < 8) {
 	  push(0);
 	}

@@ -1,7 +1,7 @@
 /// @file tree.h
 /// @author 140013444 
 /// @date 7 Oct 2016
-/// @brief Main data structure for CS3302-DE Adaptive Huffman coding
+/// @brief Main Tree structure for CS3302-DE Adaptive Huffman coding
 //
 /// The tree performs adaptive Huffman encoding/decoding between the 
 /// provided streams. 
@@ -36,9 +36,9 @@ class Tree {
   std::map<int, Node*> groups;  ///< Mapping from weight to heighest node of weight
   std::map<char, Node*> leaves; ///< Mapping from symbol to representing leaf
 
-  void update_weight(Node*);      ///< Increment leaf weight or recalculate branch weight
-  void change_weight(Node*, int); ///< Change node weight, while maintaining groups
-  void perform_swap(Node*);       ///< Swap the node with the heighest weighted in group
+  void update_weight(Node*);      ///< Increments leaf weight or recalculates branch weight
+  void change_weight(Node*, int); ///< Changes node weight, while maintaining groups
+  void perform_swap(Node*);       ///< Swaps the node with the heighest weighted in group
 
   // Accessors
   Node* get_root();                    ///< Provides a ptr to the root node
@@ -50,10 +50,12 @@ class Tree {
 public:
   Tree(std::istream&, std::ostream&);  ///< Standard constructor
 
-  bool contains(char);            ///< Has the tree previously encoded the given symbol
-  void process_symbol(char, OutputBuffer&);      ///< Encode a single symbol and update structure
+  bool contains(char);  ///< Checks the tree for a given symbol
 
-  void encode();
-  void decode();
+  void process_symbol(char, OutputBuffer&);  ///< Encodes a single symbol and update structure
+
+  void encode();  ///< Begins encoding of the input stream
+  void decode();  ///< Begins decoding of the input stream
  };
+
 #endif // HUFFMAN_TREE_H_

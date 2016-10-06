@@ -63,3 +63,7 @@ void Node::set_right(Node* right) {
   this->right->parent = this;
 }
 
+bool Node::is_leaf() { return left == nullptr && right == nullptr; }
+char Node::get_symbol() { return symbol; }
+int Node::get_weight() { return weight; }
+Node* Node::get_next(bool go_right) { return go_right ? right.get() : left.get(); }

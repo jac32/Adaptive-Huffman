@@ -22,41 +22,53 @@ typedef bool bit;
 
 /// @brief Base class for bit/byte stream conversion via buffer.
 ///
-/// Encapsulating the common behavior of the InputBuffer and OutputBuffer.
+/// Encapsulates the common behavior of the InputBuffer and OutputBuffer.
 class Buffer : public std::queue<bit> {
-  size_t capacity;
- public:
-  Buffer(size_t capacity = 8);
-  size_t get_capacity();
-  byte pop_byte(); 
-  void push_byte(byte input);
-};
 
-
-class InputBuffer : public Buffer {
-  std::istream& stream;
-
-public: 
-  InputBuffer(std::istream& stream, size_t = 8); 
-
-  byte receive_byte();
-  bit receive_bit();
-
-  bool eof();
-};
-
-
-class OutputBuffer : public Buffer {
-  std::ostream& stream;
+  size_t capacity;  ///< The maximum number of bits to be buffered at any given time
 
 public:
-  OutputBuffer(std::ostream& stream, size_t = 8);
-  ~OutputBuffer();
+  Buffer(size_t capacity = 8);  ///< Standard constructor
 
-  void flush(bool = false);
+  byte pop_byte();             ///< Pops and returns a full byte from the buffer
+  void push_byte(byte input);  ///< Pushes a full byte to the buffer
 
-  void send_byte(byte out_byte);
-  void send_bit(bit bit);
+  size_t get_capacity();  ///< Gets the maximum buffer size (in bits)
+};
+
+/// @brief Buffers input bytestream and provides bitwise operations 
+///
+/// Data streams are typically bytestreams, but the compression algorithms require bitstreams.
+/// This class buffers up bytes from the stream and provides convenient bitwise accessors
+class InputBuffer : public Buffer {
+
+  std::istream& stream; ///< The input bytestream
+
+public: 
+  InputBuffer(std::istream& stream, size_t = 8);  ///< Standard constructor
+
+  byte receive_byte();  ///< Obtain the next full byte from the buffer
+  bit receive_bit();    ///< Obtain the next bit from the buffer
+
+  bool eof();  ///< Checks if the underlying stream is exhausted
+};
+
+/// @brief Buffers output bytestream and provides bitwise operations 
+///
+/// Data streams are typically bytestreams, but the compression algorithms require bitstreams.
+/// This class buffers up bits and provides convenient bitwise push functions
+class OutputBuffer : public Buffer {
+
+  std::ostream& stream;  ///< The output bytestream
+
+public:
+  OutputBuffer(std::ostream& stream, size_t = 8);  ///< Standard constructor
+  ~OutputBuffer();                                 ///< Pads to a full byte with 0 bits
+
+  void flush(bool = false);  ///< flush all full bytes from the buffer
+
+  void send_byte(byte out_byte);  ///< Push a full byte into the buffer (may flush)
+  void send_bit(bit bit);         ///< Push a single bit into the buffer (may flush)
 };
 
 #endif // HUFFMAN_INPUTBUFFER_H_

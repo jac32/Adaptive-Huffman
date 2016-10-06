@@ -19,7 +19,7 @@ set(PROJECT_LIB_NAME ${PROJECT_NAME_STR}_impl)
 include_directories(${COMMON_INCLUDES})
 file(GLOB SRC_LIB_FILES ${PROJECT_SOURCE_DIR}/src/lib/*.cc)
 add_library(${PROJECT_LIB_NAME} ${SRC_LIB_FILES})
-add_executable(main ${PROJECT_SOURCE_DIR}/src/main.cc ${SRC_LIB_FILES})
+add_executable(huff ${PROJECT_SOURCE_DIR}/src/main.cc ${SRC_LIB_FILES})
 add_subdirectory(${EXT_PROJECTS_DIR}/gtest)
 
 #-------------------

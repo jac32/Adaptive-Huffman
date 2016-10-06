@@ -36,7 +36,7 @@ void Tree::decode() {
   char symbol;
   while (!buffered_in.eof()) {
 	while(!ptr->is_leaf()) {
-	  ptr = ptr->next(buffered_in.receive_bit()); 
+	  ptr = ptr->get_next(buffered_in.receive_bit()); 
 	}
 
 	if (ptr == nyt) {
