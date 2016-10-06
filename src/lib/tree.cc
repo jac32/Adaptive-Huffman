@@ -1,9 +1,9 @@
 #include <set>
 #include <string>
 #include <iostream>
+#include <fstream>
 
 #include "tree.h"
-
 
 Tree::Tree(std::istream& input, std::ostream& output) : input(input), output(output) {
   root = std::unique_ptr<Node>(new Node());
@@ -11,33 +11,69 @@ Tree::Tree(std::istream& input, std::ostream& output) : input(input), output(out
 }
 
 void Tree::encode() {
-  char input_byte;
-  do {
+  OutputBuffer output_buffer(output);
+  char input_byte = input.get();
+
+  // Encode stream
+  while (!input.eof()) {
+	process_symbol(input_byte, output_buffer);
 	input_byte = input.get();
-	if (input_byte == std::char_traits<wchar_t>::eof()) {
-	  break;
-	}
-	process_symbol(input_byte);
   }
-  while (input_byte);
+
+  // Provide non-ambiguous padding
+  
+  if (!output_buffer.empty()) {
+	nyt->transmit_path(output_buffer);
+	output_buffer.flush(true);
+  }
 }
 
-void Tree::process_symbol(char symbol) {
+
+void Tree::decode() {
+  InputBuffer input_buffer(input); 
+
+  // TEMP WHILE FIGURING OUT API
+  std::ofstream noop_stream ("/dev/null");
+  OutputBuffer noop_buffer(noop_stream); 
+
+  char symbol;
+  bool go_right;
+  Node* ptr = root.get();
+  while (!input_buffer.empty()) {
+	if (!ptr->is_leaf()) {
+	  go_right = input_buffer.receive_bit();
+	  ptr = ptr->next(go_right);
+	}
+	else {
+	  if (ptr == nyt) {
+		if (input.eof()) return;
+		symbol = input_buffer.receive_byte();
+	  }
+	  else {
+		// At leaf so use symbol and reset ptr
+		symbol = ptr->symbol;
+	  }
+	  output << symbol;
+	  process_symbol(symbol, noop_buffer);
+	  ptr = root.get();
+	}
+  }
+}
+
+void Tree::process_symbol(char symbol, OutputBuffer& buffer) {
   Node* leaf;
 
   // This is a symbol Not Yet Transmitted
   if(!contains(symbol)) {
 	// Raw symbols preceded by NYT path
-	this->nyt->transmit_path(this->output);
-
-	output.push_byte(symbol);
-	
+	nyt->transmit_path(buffer);
+	buffer.send_byte(symbol);
     leaf = new Node(symbol);
 
     // Split the NYT Node into a NYT and a new leaf
     // and set new root when transmitting the first symbol
     if (nyt == get_root()) {
-	  this->set_root(new Node(nyt, leaf));
+	  set_root(new Node(nyt, leaf));
     }
 	else {
       nyt->parent->set_left(new Node(nyt, leaf));
@@ -49,7 +85,7 @@ void Tree::process_symbol(char symbol) {
 	// This symbol has been seen before, so we can
 	// update the corresponding leaf node
     leaf = leaves[symbol];
-	leaf->transmit_path(this->output);
+	leaf->transmit_path(buffer);
   }
 
   // Since the leaf's weight has changed, parent weights and
@@ -171,6 +207,6 @@ Node* Tree::get_root() { return root.get(); }
 Node* Tree::get_weight_group(int weight) { return groups[weight]; }
 
 void Tree::set_root(Node* root) {
-	this->root.release();
-	this->root = std::unique_ptr<Node>(root);
+  this->root.release();
+  this->root = std::unique_ptr<Node>(root);
 }

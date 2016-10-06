@@ -34,7 +34,7 @@ Node::Node(char symbol) {
 }
 
 // TODO: Handle root case
-void Node::transmit_path(BitDump& output) {
+void Node::transmit_path(OutputBuffer& output) {
   std::stack<bool> path;
 
   Node* child = this;

@@ -19,7 +19,7 @@
 #include <map>
 #include <memory>
 
-#include "bitdump.h"
+#include "buffer.h"
 #include "node.h"
 
 /// @brief Adaptive Huffman code tree
@@ -27,9 +27,9 @@
 // TODO: class Tree detailed explanation
 class Tree {
 
-  std::istream& input;
+  std::istream& input; ///< Buffered input stream
+  std::ostream& output; ///< Buffered output stream
 
-  BitDump output; ///< Buffered output stream
   Node* nyt;      ///< Maintained pointer to the NYT node
 
   std::unique_ptr<Node> root;   ///< Tree owns root to provide auto cleanup
@@ -48,9 +48,12 @@ class Tree {
   void set_root(Node* root);  ///< Takes ownership of the new node (releases old)
 
 public:
-  Tree(std::istream&, std::ostream&);            ///< Standard constructor
+  Tree(std::istream&, std::ostream&);  ///< Standard constructor
+
   bool contains(char);            ///< Has the tree previously encoded the given symbol
-  void process_symbol(char);      ///< Encode a single symbol and update structure
+  void process_symbol(char, OutputBuffer&);      ///< Encode a single symbol and update structure
+
   void encode();
+  void decode();
  };
 #endif // HUFFMAN_TREE_H_

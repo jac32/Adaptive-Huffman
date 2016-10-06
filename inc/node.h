@@ -14,7 +14,7 @@
 #include <memory>
 #include <iostream>
 
-#include "bitdump.h"
+#include "buffer.h"
 
 //TODO: Is member encapsulation necessary when Tree is friend class?
 
@@ -36,13 +36,15 @@ class Node {
   Node(Node*, Node*);  ///< Constructor for branch Node
 
 
-  void transmit_path(BitDump&);
+  void transmit_path(OutputBuffer&);
   void set_left(Node*);
   void set_right(Node*);
 
 public:
+  bool is_leaf() { return left == nullptr && right == nullptr; }
   char get_symbol() { return symbol; }
   int get_weight() { return weight; }
+  Node* next(bool go_right) { return go_right ? right.get() : left.get(); }
 };
 
 #endif // HUFFMAN_NODE_H_
