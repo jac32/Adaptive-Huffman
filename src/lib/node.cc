@@ -1,5 +1,6 @@
 #include <stack>
 #include <assert.h>
+#include <iostream>
 
 #include "node.h"
 
@@ -38,12 +39,11 @@ void Node::transmit_path(OutputBuffer& output) {
   std::stack<bool> path;
 
   Node* child = this;
-  Node* parent = this->parent;
-  while (parent != nullptr) {
+
+  while (child->parent != nullptr) {
 	assert(child->group_next->weight == child->weight);
-	path.push((child == parent->left.get() ?  0 : 1));
-	child = parent;
-	parent = parent->parent;
+	path.push((child == child->parent->left.get() ?  0 : 1));
+	child = child->parent;
   }
 
   while (path.size() > 0) {

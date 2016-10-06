@@ -19,44 +19,36 @@ void Tree::encode() {
 	process_symbol(input_byte, output_buffer);
 	input_byte = input.get();
   }
-
+  //output_buffer.push_byte(0x0F);
+  nyt->transmit_path(output_buffer);
   // Provide non-ambiguous padding
-  
-  if (!output_buffer.empty()) {
-	nyt->transmit_path(output_buffer);
-	output_buffer.flush(true);
-  }
-}
+
+ }
 
 
 void Tree::decode() {
-  InputBuffer input_buffer(input); 
+  std::fstream null_out ("/dev/null");
 
-  // TEMP WHILE FIGURING OUT API
-  std::ofstream noop_stream ("/dev/null");
-  OutputBuffer noop_buffer(noop_stream); 
+  InputBuffer buffered_in(input);
+  OutputBuffer buffered_out(null_out);
 
-  char symbol;
-  bool go_right;
   Node* ptr = root.get();
-  while (!input_buffer.empty()) {
-	if (!ptr->is_leaf()) {
-	  go_right = input_buffer.receive_bit();
-	  ptr = ptr->next(go_right);
+  char symbol;
+  while (!buffered_in.eof()) {
+	while(!ptr->is_leaf()) {
+	  ptr = ptr->next(buffered_in.receive_bit()); 
+	}
+
+	if (ptr == nyt) {
+	  symbol = buffered_in.receive_byte();
 	}
 	else {
-	  if (ptr == nyt) {
-		if (input.eof()) return;
-		symbol = input_buffer.receive_byte();
-	  }
-	  else {
-		// At leaf so use symbol and reset ptr
-		symbol = ptr->symbol;
-	  }
-	  output << symbol;
-	  process_symbol(symbol, noop_buffer);
-	  ptr = root.get();
+	  symbol = ptr->get_symbol();
 	}
+
+	output << symbol; 
+	process_symbol(symbol, buffered_out);
+	ptr = root.get();
   }
 }
 

@@ -42,7 +42,7 @@ public:
   byte receive_byte();
   bit receive_bit();
 
-  friend InputBuffer& operator>>(InputBuffer& ib, bool& output);
+  bool eof();
 };
 
 
@@ -51,6 +51,7 @@ class OutputBuffer : public Buffer {
 
 public:
   OutputBuffer(std::ostream& stream, size_t = 8);
+  ~OutputBuffer();
 
   void flush(bool = false);
 

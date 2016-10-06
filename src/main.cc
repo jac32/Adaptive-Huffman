@@ -9,28 +9,34 @@
 int main (int argc, char* argv[]) {
   // Initialize input, output and data structure
   
-  std::fstream input("test.huff");
-  Tree t(input, std::cout);
-  t.decode();
+  // std::fstream input("test.huff");
+  // Tree t(input, std::cout);
+  // t.decode();
 
-  // Tree tree(std::cin, std::cout);
+  // std::stringstream input("hello i am jack");
 
-  // int c;
-  // while((c =  getopt(argc, argv, "de")) != EOF) {
-  // 	  switch (c) {
-  // 		case 'd':
-  // 		  tree.decode();
-  // 		  std::cout << std::endl;
-  // 		  break;
-  // 		case 'e':
-  // 		  tree.encode();
-  // 		  break;
-  //       }
+  // std::stringstream compressed;
 
-  //   }
+  // Tree t1(input, compressed);
+  // t1.encode();
+
+  // Tree t2(compressed, std::cout);
+  // t2.decode();
 
 
+  Tree tree(std::cin, std::cout);
   
+  int c;
+  while((c =  getopt(argc, argv, "de")) != EOF) {
+  	  switch (c) {
+  		case 'd':
+  		  tree.decode();
+  		  break;
+  		case 'e':
+  		  tree.encode();
+  		  break;
+        }
+    }
 
   // Cleanup
 }

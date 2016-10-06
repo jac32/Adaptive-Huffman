@@ -23,8 +23,7 @@ byte Buffer::pop_byte() {
 
 void Buffer::push_byte(byte input) {
   byte mask = 0x80;
-
-  for (int i = 0; i < 8; ++i) {
+for (int i = 0; i < 8; ++i) {
 	push(mask >> i & input);
   }
 }
@@ -41,9 +40,19 @@ InputBuffer::InputBuffer(std::istream& stream, size_t capacity) : Buffer(capacit
   }
 }
 
+bool InputBuffer::eof() {
+  return stream.eof(); 
+}
+
 byte InputBuffer::receive_byte() {
-  push_byte(stream.get());
-  push_byte(stream.get());
+  if (stream.eof()) {
+	std::cerr << "YAY!" << std::endl;
+	while (size() < 8) {
+	  push(0);
+	}
+  } else {
+	push_byte(stream.get());
+  }
   return pop_byte();
 }
 
@@ -61,6 +70,12 @@ bit InputBuffer::receive_bit() {
 // Output Buffer
 //================================================================================ 
 OutputBuffer::OutputBuffer(std::ostream& stream, size_t capacity) : Buffer(capacity), stream(stream) {}
+
+OutputBuffer::~OutputBuffer() {
+  while (size() > 0) {
+	send_bit(0);
+  }
+}
 
 void OutputBuffer::flush(bool force) {
   if (size() >= get_capacity() || force) {
