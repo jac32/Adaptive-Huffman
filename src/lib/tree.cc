@@ -19,11 +19,13 @@ void Tree::encode() {
 	process_symbol(input_byte, output_buffer);
 	input_byte = input.get();
   }
-  //output_buffer.push_byte(0x0F);
-  nyt->transmit_path(output_buffer);
-  // Provide non-ambiguous padding
 
- }
+  // Provide non-ambiguous padding
+  if (!output_buffer.empty()) {
+	std::cerr << output_buffer.size() << std::endl;
+	nyt->transmit_path(output_buffer);
+  }
+}
 
 
 void Tree::decode() {
@@ -34,7 +36,8 @@ void Tree::decode() {
 
   Node* ptr = root.get();
   char symbol;
-  while (!buffered_in.eof()) {
+  while (true) {
+
 	while(!ptr->is_leaf()) {
 	  ptr = ptr->get_next(buffered_in.receive_bit()); 
 	}
@@ -46,6 +49,7 @@ void Tree::decode() {
 	  symbol = ptr->get_symbol();
 	}
 
+	if (symbol == -1) return;
 	output << symbol; 
 	process_symbol(symbol, buffered_out);
 	ptr = root.get();

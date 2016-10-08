@@ -25,12 +25,12 @@ typedef bool bit;
 /// Encapsulates the common behavior of the InputBuffer and OutputBuffer.
 class Buffer : public std::queue<bit> {
 
-  size_t capacity;  ///< The maximum number of bits to be buffered at any given time
+  size_t capacity;  ///< The maximum number of bits desired to be buffered at any given time
 
 public:
   Buffer(size_t capacity = 8);  ///< Standard constructor
 
-  byte pop_byte();             ///< Pops and returns a full byte from the buffer
+  int pop_byte();             ///< Pops and returns a full byte from the buffer
   void push_byte(byte input);  ///< Pushes a full byte to the buffer
 
   size_t get_capacity();  ///< Gets the maximum buffer size (in bits)
@@ -40,24 +40,25 @@ public:
 ///
 /// Data streams are typically bytestreams, but the compression algorithms require bitstreams.
 /// This class buffers up bytes from the stream and provides convenient bitwise accessors
-class InputBuffer : public Buffer {
+class InputBuffer : private Buffer {
 
   std::istream& stream; ///< The input bytestream
 
 public: 
   InputBuffer(std::istream& stream, size_t = 8);  ///< Standard constructor
 
-  byte receive_byte();  ///< Obtain the next full byte from the buffer
-  bit receive_bit();    ///< Obtain the next bit from the buffer
+  int receive_byte();  ///< Obtain the next full byte from the buffer
+  int receive_bit();    ///< Obtain the next bit from the buffer
 
-  bool eof();  ///< Checks if the underlying stream is exhausted
+  using Buffer::empty;
+  using Buffer::size;
 };
 
 /// @brief Buffers output bytestream and provides bitwise operations 
 ///
 /// Data streams are typically bytestreams, but the compression algorithms require bitstreams.
 /// This class buffers up bits and provides convenient bitwise push functions
-class OutputBuffer : public Buffer {
+class OutputBuffer : private Buffer {
 
   std::ostream& stream;  ///< The output bytestream
 
@@ -69,6 +70,9 @@ public:
 
   void send_byte(byte out_byte);  ///< Push a full byte into the buffer (may flush)
   void send_bit(bit bit);         ///< Push a single bit into the buffer (may flush)
+
+  using Buffer::empty;
+  using Buffer::size;
 };
 
 #endif // HUFFMAN_INPUTBUFFER_H_

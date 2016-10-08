@@ -3,10 +3,10 @@
 /// @date 7 Oct 2016
 /// @brief Node class for CS3302-DE Adaptive Huffman coding
 //
-/// The tree performs adaptive Huffman encoding/decoding between the 
+/// The Tree performs adaptive Huffman encoding/decoding between the 
 /// provided streams. 
-// TODO: Discuss implementation design/details
 ///
+/// 
 
 #ifndef HUFFMAN_NODE_H_
 #define HUFFMAN_NODE_H_

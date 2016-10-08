@@ -33,6 +33,7 @@ It was also stated that the preferred implementation language was Java and that 
 
 Architecture
 ------------
+- TODO
 
 ### Tooling Overview
 Although the preferred language was Java, C++ was chosen for several reasons. 
@@ -60,24 +61,60 @@ A brief summary of tools used follows:
 - **Continuous Integration:** Travis CI
 - **Documentation:** Doxygen
 
-### Usage Instructions
+
+### Algorithm
+
+TODO: Pseudocode algorithms overview
+TODO: Linked-list discussion
+TODO: Comparison against other algorithms
+
+Usage Instructions
 -----
-``` sh
-	$ huff --help
-
-```
- 
-
 
 ### Build
 
+The project uses cmake to handle the build process. 
+As is standard when using cmake, the following commands will build the project.
+
+``` sh 
+	$ mkdir build
+	$ cd build
+	$ cmake ..
+	$ make 
+``` 
+
+To cleanly remove the newly built project, simply delete the `build/` directory.
+
+The generated makefile will contain specific targets for building only the tests, the project library or the `huff` binary executable.
+
 ### Test
+
+The unit tests will be built automatically as part of the build process.
+To run the tests, run the following command within the `build/` directory:
+
+``` sh 
+	$ ctest -VV
+```
 
 ### Usage
  
+The main executable can provide its own usage instructions:
+
+``` sh
+	$ huff --help
+```
+
+
 
 Testing
 -------
+
+
+- TODO: Tests on data structures
+- TODO: End to end tests on files
+- TODO:  
+
+
 
 Evaluation
 ----------

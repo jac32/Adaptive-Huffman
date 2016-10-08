@@ -34,7 +34,6 @@ Node::Node(char symbol) {
   group_prev = this;
 }
 
-// TODO: Handle root case
 void Node::transmit_path(OutputBuffer& output) {
   std::stack<bool> path;
 
@@ -42,12 +41,12 @@ void Node::transmit_path(OutputBuffer& output) {
 
   while (child->parent != nullptr) {
 	assert(child->group_next->weight == child->weight);
-	path.push((child == child->parent->left.get() ?  0 : 1));
+	path.push(child == child->parent->right.get());
 	child = child->parent;
   }
 
   while (path.size() > 0) {
-	output.push(path.top());
+	output.send_bit(path.top());
 	path.pop();
   }
 }

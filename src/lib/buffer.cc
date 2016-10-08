@@ -8,7 +8,9 @@ Buffer::Buffer(size_t capacity) {
   this->capacity = capacity;
 }
 
-byte Buffer::pop_byte() {
+int Buffer::pop_byte() {
+  if (empty()) return -1;
+
   bool next;
   byte output = 0x0; 
   byte mask = 0x80;
@@ -23,7 +25,7 @@ byte Buffer::pop_byte() {
 
 void Buffer::push_byte(byte input) {
   byte mask = 0x80;
-for (int i = 0; i < 8; ++i) {
+  for (int i = 0; i < 8; ++i) {
 	push(mask >> i & input);
   }
 }
@@ -35,33 +37,41 @@ size_t Buffer::get_capacity() { return capacity; }
 //================================================================================ 
 
 InputBuffer::InputBuffer(std::istream& stream, size_t capacity) : Buffer(capacity), stream(stream) {
-  while (size() < get_capacity()) {
-	push_byte(stream.get());
+  int next_val;
+  while ((next_val = stream.get()) != -1 && size() <= get_capacity() - 8) {
+	  push_byte(next_val);
   }
 }
 
-bool InputBuffer::eof() {
-  return stream.eof(); 
-}
+int InputBuffer::receive_byte() {
+  int next = stream.get();
+  if (next == -1)
+	return next;
 
-byte InputBuffer::receive_byte() {
-  if (stream.eof()) {
+  if (next != -1) {
+	push_byte(next);
+	return pop_byte();
+  }
+  else if (size() > 0) {
 	while (size() < 8) {
 	  push(0);
 	}
-  } else {
-	push_byte(stream.get());
+	return pop_byte();
   }
-  return pop_byte();
+
+  return -1;
 }
 
-bit InputBuffer::receive_bit() {
-  if (empty()) {
-	push_byte(stream.get());
+int InputBuffer::receive_bit() {
+  int next_val = stream.get(); 
+  if (next_val == -1) {
+	return -1;
   }
-  bit retval = front();
-  pop();
-  return retval;
+  else if (empty() && next_val != -1) {
+	push_byte(next_val);
+  }
+  next_val = front(); pop();
+  return next_val;
 }
 
 
@@ -72,7 +82,7 @@ OutputBuffer::OutputBuffer(std::ostream& stream, size_t capacity) : Buffer(capac
 
 OutputBuffer::~OutputBuffer() {
   while (size() > 0) {
-	send_bit(0);
+	send_bit(0); 
   }
 }
 
@@ -81,7 +91,7 @@ void OutputBuffer::flush(bool force) {
 	while (size() >= 8) {
 	  stream << pop_byte();
 	}
-  }
+  }	
 }
 
 void OutputBuffer::send_byte(byte out_byte) {
