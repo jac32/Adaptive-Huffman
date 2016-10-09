@@ -48,7 +48,7 @@ class Node {
 
 public:
   bool is_leaf();                 ///< Checks if the current node has any children
-  Node* get_next(bool go_right);  ///< Gets the node in the given direction (left = 0, right = 1)
+  Node* get_child(bool right);  ///< Gets the node in the given direction (left = 0, right = 1)
 
   int get_weight();   ///< Get the Node's associated weight
   char get_symbol();  ///< Get the Node's associated symbol

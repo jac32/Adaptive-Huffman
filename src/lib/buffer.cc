@@ -1,12 +1,10 @@
+#include <assert.h>
+
 #include "buffer.h"
 
 //================================================================================ 
 // Base Class
 //================================================================================ 
-
-Buffer::Buffer(size_t capacity) {
-  this->capacity = capacity;
-}
 
 int Buffer::pop_byte() {
   if (empty()) return -1;
@@ -30,55 +28,50 @@ void Buffer::push_byte(byte input) {
   }
 }
 
-size_t Buffer::get_capacity() { return capacity; }
 
 //================================================================================ 
 // Input Buffer
 //================================================================================ 
 
-InputBuffer::InputBuffer(std::istream& stream, size_t capacity) : Buffer(capacity), stream(stream) {
-  int next_val;
-  while ((next_val = stream.get()) != -1 && size() <= get_capacity() - 8) {
-	  push_byte(next_val);
+InputBuffer::InputBuffer(std::istream& stream) : stream(stream) {
+  int next;
+  if ((next = stream.get()) != -1) {
+	push_byte(next);
   }
 }
 
 int InputBuffer::receive_byte() {
-  int next = stream.get();
-  if (next == -1)
-	return next;
-
-  if (next != -1) {
-	push_byte(next);
+  int next;
+  if (size() >= 8) {
 	return pop_byte();
   }
-  else if (size() > 0) {
-	while (size() < 8) {
-	  push(0);
-	}
-	return pop_byte();
+  else if ((next = stream.get()) != -1) {
+	return push_byte(next), pop_byte();
   }
-
-  return -1;
+  else {
+	return -1;
+  }
 }
 
 int InputBuffer::receive_bit() {
-  int next_val = stream.get(); 
-  if (next_val == -1) {
-	return -1;
+  int next;
+  if (empty()) {
+	if ((next = stream.get()) != -1) {
+	  push_byte(next);
+	}
+	else {
+	  return -1;
+	}
   }
-  else if (empty() && next_val != -1) {
-	push_byte(next_val);
-  }
-  next_val = front(); pop();
-  return next_val;
+  next = front();
+  return pop(), next;
 }
 
 
 //================================================================================ 
 // Output Buffer
 //================================================================================ 
-OutputBuffer::OutputBuffer(std::ostream& stream, size_t capacity) : Buffer(capacity), stream(stream) {}
+OutputBuffer::OutputBuffer(std::ostream& stream) : stream(stream) {}
 
 OutputBuffer::~OutputBuffer() {
   while (size() > 0) {
@@ -87,11 +80,9 @@ OutputBuffer::~OutputBuffer() {
 }
 
 void OutputBuffer::flush(bool force) {
-  if (size() >= get_capacity() || force) {
-	while (size() >= 8) {
-	  stream << pop_byte();
-	}
-  }	
+  while (size() >= 8) {
+	stream << (char) pop_byte();
+  }
 }
 
 void OutputBuffer::send_byte(byte out_byte) {

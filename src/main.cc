@@ -40,6 +40,7 @@ int main (int argc, char* argv[]) {
 	tree.decode();
   }
   else {
+	//std::cout << middle.str(); 
 	flags.PrintHelp(argv[0]);
   }
 

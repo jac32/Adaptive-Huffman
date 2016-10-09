@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <set>
 #include <string>
 #include <iostream>
@@ -22,7 +23,6 @@ void Tree::encode() {
 
   // Provide non-ambiguous padding
   if (!output_buffer.empty()) {
-	std::cerr << output_buffer.size() << std::endl;
 	nyt->transmit_path(output_buffer);
   }
 }
@@ -35,22 +35,26 @@ void Tree::decode() {
   OutputBuffer buffered_out(null_out);
 
   Node* ptr = root.get();
-  char symbol;
-  while (true) {
+  int symbol;
+  while (!input.eof()) {
 
 	while(!ptr->is_leaf()) {
-	  ptr = ptr->get_next(buffered_in.receive_bit()); 
+	  int direction = buffered_in.receive_bit();
+	  if (direction == -1) return; // Single char
+	  assert(direction == 0 | direction == 1);
+	  ptr = ptr->get_child(direction); 
 	}
 
 	if (ptr == nyt) {
-	  symbol = buffered_in.receive_byte();
+	  if ( (symbol = buffered_in.receive_byte()) == -1) {
+		return; 
+	  }
 	}
 	else {
 	  symbol = ptr->get_symbol();
 	}
 
-	if (symbol == -1) return;
-	output << symbol; 
+	output << (char) symbol; 
 	process_symbol(symbol, buffered_out);
 	ptr = root.get();
   }

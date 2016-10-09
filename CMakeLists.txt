@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 2.8.8)
 set(PROJECT_NAME_STR Adaptive-Huffman)
-set(CMAKE_BUILD_TYPE Release)
+# set(CMAKE_BUILD_TYPE Release)
 project(${PROJECT_NAME_STR} C CXX)
 
 find_package(Threads REQUIRED)
-add_definitions(-Wall -ansi -Wno-deprecated -pthread -std=c++11 -O3)
+add_definitions(-Wall -ansi -Wno-deprecated -pthread -std=c++11 -g )# -O3)
 
 #-------------------
 # set common include folder for module
