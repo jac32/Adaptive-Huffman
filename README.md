@@ -35,6 +35,7 @@ It was also stated that the preferred implementation language was Java and that 
 Architecture
 ------------
 
+
 ### Project Directory Structure
 
 ```
@@ -98,6 +99,17 @@ A brief summary of tools used follows:
 - **Continuous Integration:** Travis CI
 - **Documentation:** Doxygen
 
+### Implementation Approach
+
+ The algorithm is specifically dynamic and should process each symbol only once.
+ For this style of task, `iostream`s are well suited.
+ 
+ Additionally, the wide range of unix tools (e.g. cat, echo, head, tail, xxd) provide utilities for inspecting and managing these types of streams on the command line. 
+ With this in mind, and the focus of the practical being on the algorithm and not the UI, a simple CLI was chosen.
+ Any data stream can be piped into the program via `stdin` and the output simply dumps to `stdout`. 
+ To allow for the possibility of more elegant interfaces (and in the spirit of modular software design) the data structure is implemented as a standalone library and builds as such.
+ 
+ See the Usage section for more information.
 
 ### Algorithm
 
@@ -161,6 +173,72 @@ From the `encode` and `decode` functions, we can see the data structure be dynam
 
 
 
+The C++ implementation of this algorithm stays fairly true to the psuedocode displayed here, though there are a few other considerations.
+
+- Leaf node lookup
+- Highest node in weight group lookup 
+- Symbol length
+
+The lookup operations can be (and have been in this implementation) implemented in amortized constant time.
+
+The approach for each lookup is independent.
+
+#### Leaf Lookup
+
+As each leaf is uniquely identified by its symbol, a mapping of symbols to leaf node pointers is simply maintained.
+All this requires is an insertion into the map whenever a new symbol is seen and then leaf lookup and the contains operation are both constant time map indexing.
+
+It is worth noting here that the standard `map` object in C++'s standard library does not offer the performance profile described here. 
+Instead it is ordered and the `unordered_map` object is required. 
+This was discovered while profiling performance post-development and was luckily a simple fix.
+The performance increase was noticable for larger files but as the speed of compression was secondary to the compression rate in this pratical further performance profiling was not done.
+
+
+#### Highest Common-Weighted Node Lookup
+
+Performing ths lookup in constant time was slightly more interesting than simply including a mapping.
+
+A doubly-linked circular list of nodes is used to define a weight class - with the head of the list being the highest (and right-most) in the tree.
+
+Whenever a new node is added to the group (via a weight increment, tree insertion, etc.) it is placed to the rear of the list (constant time operation) and then, provided tree swaps also swap in the list, the order of nodes within the group is maintained.
+
+With a mapping of weights to the heads of the corresponding lists, we can achieve constant time lookup for this operation.
+
+
+#### Symbol Length
+The current implementation supports only symbols of one byte in size.
+A change in symbol length may provide several changes in performance:
+
+For example, an increase in symbol length would:
+- Increase the maximum tree size (capitalizing on the lookup optimizations)
+- Possibly better capture the information in certain encodings (such as UTF-16)
+
+
+Evaluation
+----------
+
+While the FGK variant was implemented due to prevalance in literature and of well documented implementations, other options were explored.
+
+The strongest alternative was was proposed by Vitter.
+The data structure is very similar to FGK with subtle changes to the invariant: 
+
+	For each weight w, all leaves of weight w precede (in the implicit numbering) all internal nodes of weight w.   [Vitter 1987]
+
+The implicit numbering is similar to the concept of order in FGK:
+The bottom-left node has the lowest numbering and it increases as we move up the tree.
+
+The algorithm has a similar compression rate in the average case but is resilient against FGK's pathological case.
+
+ 
+Both of these algorithms are extremely sensitive to errors.
+If a single bit is corrupted within the stream, the encoding of all following bits will be shifted resultingly.
+Several approaches can be employed to combat this, including segmentation of the data stream.
+This does however present challenges, as the tree has to be rebuilt for every new segment of the stream.
+
+If a sufficiently dynamic tree was designed, such that the segmentation approach was feasible, then the resulting coding would be far more adaptive and would profit from clustering of symbols and similar phenomena that occur in certain information streams.
+
+With more time this area be highly interesting to investigate further.
+
 
 
 
@@ -202,23 +280,26 @@ The main executable can provide its own usage instructions:
 	$ huff --help
 ```
 
+but examples of compression and decompression are shown below
+
+#### Encoding
+``` sh
+	$ cat input.txt | huff -e > compressed.txt
+```
+
+
+#### Decoding
+``` sh
+	$ cat compressed.txt | huff -d > decompressed.txt
+```
+
+
 Testing
 -------
 
 Asserts are used to check the data structure invariants are maintained across operations.
+Additionally, various buffer structures and some simple end-to-end example uses are unit tested. 
 
-Additionally, the basic buffer behaviour is unit tested.
-
-
-
-- TODO: End to end tests on files
-
-
-Evaluation
-----------
- 
- 
- 
 
 References 
 ----------

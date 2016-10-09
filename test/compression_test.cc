@@ -1,9 +1,10 @@
 #include "gtest/gtest.h"
 
+#include <stdlib.h> 
 #include <sstream>
+#include <fstream>
 
 #include "tree.h"
-
 
 class EndToEndTest : public ::testing::Test {
 protected:
