@@ -14,6 +14,9 @@ Quick Start
 	$ echo -n "hello world" | ./huff -e | ./huff -d
 	>> hello world
 ```
+
+Report is auto-generated from this README and from code documentation.
+Tools allocate `Chapter 1` as main report all else is listing of library classes etc.
  
 Specification
 -------------
